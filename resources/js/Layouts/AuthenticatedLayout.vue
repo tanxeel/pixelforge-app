@@ -12,9 +12,9 @@ const showingNavigationDropdown = ref(false);
 
 <template>
     <div>
-        <div class="min-h-screen bg-gray-100">
+        <div class="min-h-screen bg-slate-50">
             <nav
-                class="border-b border-gray-100 bg-white"
+                class="sticky top-0 z-20 border-b border-slate-200/80 bg-white/80 backdrop-blur"
             >
                 <!-- Primary Navigation Menu -->
                 <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -23,9 +23,10 @@ const showingNavigationDropdown = ref(false);
                             <!-- Logo -->
                             <div class="flex shrink-0 items-center">
                                 <Link :href="route('generate')">
-                                    <ApplicationLogo
-                                        class="block h-9 w-auto fill-current text-gray-800"
-                                    />
+                                    <span class="flex items-center gap-2.5">
+                                        <ApplicationLogo class="block h-8 w-8" />
+                                        <span class="text-lg font-bold tracking-tight text-slate-900">Pixelgen</span>
+                                    </span>
                                 </Link>
                             </div>
 
@@ -174,7 +175,7 @@ const showingNavigationDropdown = ref(false);
 
             <!-- Page Heading -->
             <header
-                class="bg-white shadow"
+                class="border-b border-slate-200 bg-white"
                 v-if="$slots.header"
             >
                 <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
