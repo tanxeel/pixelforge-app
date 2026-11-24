@@ -33,6 +33,8 @@ class GenerationService
                 throw new InsufficientCredits($est['max'], $locked->balance_nano);
             }
 
+            $this->enforceLimits($locked);
+
             $locked->decrement('balance_nano', $est['max']);
 
             $g = Generation::create([
@@ -55,6 +57,23 @@ class GenerationService
         $this->submit($generation);
 
         return $generation->fresh();
+    }
+
+    /** @throws LimitReached */
+    private function enforceLimits(User $user): void
+    {
+        $limits = config('pixelforge.limits');
+        $startOfDay = now()->utc()->startOfDay();
+
+        if (Generation::where('user_id', $user->id)->where('created_at', '>=', $startOfDay)->count() >= $limits['per_user_daily']) {
+            throw new LimitReached("You have reached today's limit of {$limits['per_user_daily']} generations. It resets at 00:00 UTC.");
+        }
+        if (Generation::where('user_id', $user->id)->whereIn('status', ['queued', 'processing'])->count() >= $limits['per_user_in_flight']) {
+            throw new LimitReached('Please wait for your running generations to finish first.');
+        }
+        if (Generation::where('created_at', '>=', $startOfDay)->count() >= $limits['global_daily']) {
+            throw new LimitReached('The demo has reached its daily generation limit. Please try again after 00:00 UTC.');
+        }
     }
 
     /** POST to Pixelforge with bounded retries. On a permanent failure the generation fails and the hold is released. */

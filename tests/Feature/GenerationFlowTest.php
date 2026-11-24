@@ -176,4 +176,17 @@ class GenerationFlowTest extends TestCase
         $this->assertSame('failed', $g->status);
         $this->assertSame(5_000_000_000, $user->fresh()->balance_nano);
     }
+
+    public function test_per_user_daily_limit_protects_the_shared_provider_quota(): void
+    {
+        config(['pixelforge.limits.per_user_daily' => 1]);
+        $user = User::factory()->create();
+        $this->makeGeneration($user);
+        $this->signedWebhook(['id' => 'evt_9', 'type' => 'generation.succeeded', 'data' => ['object' => $this->succeeded(Generation::first())]]);
+
+        $this->actingAs($user)->post('/generate', ['prompt' => 'another', 'size' => '1024x1024', 'quality' => 'low'])
+            ->assertSessionHasErrors('prompt');
+
+        $this->assertSame(1, Generation::count());
+    }
 }

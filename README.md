@@ -37,6 +37,8 @@ Tests: `php artisan test`.
 
 **Admin report** (`ADMIN_EMAIL`): credits spent, provider cost and profit per UTC day and per user, grouped on the day a generation completed (the same basis Pixelforge bills on), with a live comparison to `GET /v1/usage`.
 
+**Protecting the shared quota.** Pixelforge's limits (500 generations per UTC day, 3 concurrent, 60 requests per minute) apply to the whole account across all keys, so a public app must not let strangers burn them. The app caps each user (15 generations per UTC day, 2 in flight) and the whole app (250 per UTC day), all configurable with `LIMIT_*` env vars. Hitting a cap shows a clear message and sends nothing to Pixelforge.
+
 ## Trade-offs
 
 - Images are linked, not stored (URLs expire after 24 hours; the UI shows "Image expired").

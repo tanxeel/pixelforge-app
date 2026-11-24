@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Generation;
 use App\Services\GenerationService;
 use App\Services\InsufficientCredits;
+use App\Services\LimitReached;
 use App\Services\Pricing;
 use App\Support\Money;
 use Illuminate\Http\Request;
@@ -40,6 +41,8 @@ class GenerationController extends Controller
 
         try {
             $service->create($request->user(), $data, $rates);
+        } catch (LimitReached $e) {
+            throw ValidationException::withMessages(['prompt' => $e->getMessage()]);
         } catch (InsufficientCredits $e) {
             throw ValidationException::withMessages([
                 'prompt' => 'Not enough credits. This generation needs up to $'.Money::decimal($e->required).' held, you have $'.Money::decimal($e->balance).'.',
