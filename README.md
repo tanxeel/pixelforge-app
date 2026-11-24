@@ -2,6 +2,8 @@
 
 Laravel 13, Vue 3, Inertia. Users sign in, generate images through the Pixelforge API, see a cost estimate before submitting, and are charged the provider's real cost plus 25%.
 
+**Live:** https://pixelforge-app-wf83.onrender.com (Render free tier, so the first load after idle takes about 50 seconds). Register a new account at /register.
+
 ## Run locally
 
 ```bash
